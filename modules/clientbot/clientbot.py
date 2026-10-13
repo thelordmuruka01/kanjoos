@@ -1,3 +1,10 @@
+import pyrogram.errors as pyrogram_errors
+
+if not hasattr(pyrogram_errors, "GroupcallForbidden"):
+    if hasattr(pyrogram_errors, "GroupCallForbidden"):
+        pyrogram_errors.GroupcallForbidden = (
+            pyrogram_errors.GroupCallForbidden
+        )
 from pyrogram import Client
 from pytgcalls import PyTgCalls
 from pytgcalls.types import Update
@@ -24,8 +31,5 @@ async def on_stream_end(client: PyTgCalls, update: Update) -> None:
     ),
 )
       
-run = pytgcalls.start
 async def run():
-    async with aiohttp.ClientSession() as session:
-        # Pass this session to parts of your app that need it
-        await start_bot(session)
+    await pytgcalls.start()
