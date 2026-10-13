@@ -24,9 +24,7 @@ from modules.helpers.decorators import errors, authorized_users_only
 from modules.helpers.errors import DurationLimitError
 from modules.helpers.gets import get_url, get_file_name
 from PIL import Image, ImageFont, ImageDraw
-from pytgcalls import StreamType
-from pytgcalls.types.input_stream import InputStream
-from pytgcalls.types.input_stream import InputAudioStream
+from pytgcalls.types import MediaStream
 
 # plus
 chat_id = None
@@ -257,15 +255,10 @@ async def play(_, message: Message):
     if int(chat_id) in ACTV_CALLS:
         position = await queues.put(chat_id, file=file_path)
     else:
-        await clientbot.pytgcalls.join_group_call(
-                chat_id, 
-                InputStream(
-                    InputAudioStream(
-                        file_path,
-                    ),
-                ),
-                stream_type=StreamType().local_stream,
-            )
+        await clientbot.pytgcalls.play(
+    chat_id,
+    MediaStream(file_path),
+)
     return await lel.delete()
     
     
