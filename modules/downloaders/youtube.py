@@ -14,12 +14,16 @@ ydl_opts = {
     "format": "bestaudio/best",
     "outtmpl": path.join(DOWNLOAD_DIR, "%(id)s.%(ext)s"),
     "noplaylist": True,
-    "retries": 2,
-    "fragment_retries": 2,
+    "retries": 1,
+    "fragment_retries": 1,
+    "extractor_args": {
+        "youtube": {
+            "player_client": ["tv", "web_safari"],
+        }
+    },
     "quiet": False,
     "no_warnings": False,
 }
-
 ydl = YoutubeDL(ydl_opts)
 
 
