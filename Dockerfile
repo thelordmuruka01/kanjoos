@@ -1,39 +1,36 @@
-# Stage 1: Build stage for dependencies
-FROM debian:bookworm-slim AS builder
+# Stage 1: Build dependencies
+FROM python:3.11-slim-bookworm AS builder
 
-# Combine apt commands to reduce layers and clean up cache immediately
-# Use RUN at the start of the command block
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    curl \
-    python3-pip \
-    python3-venv \
-    ffmpeg \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-# Copy dependency files first to leverage layer caching
-COPY Installer requirements.txt* ./
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-RUN pip install --no-cache-dir -U pip && \
-    pip install --no-cache-dir -r Installer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    git \
+    curl \
+    nodejs \
+    && rm -rf /var/lib/apt/lists/*
 
-# Stage 2: Final runtime stage
-FROM debian:bookworm-slim
+COPY requirements.txt ./
+
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Stage 2: Runtime
+FROM python:3.11-slim-bookworm
+
+WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 \
     ffmpeg \
     nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
-# Copy only the virtual environment and app code from the builder
 COPY --from=builder /opt/venv /opt/venv
 COPY . .
 
 ENV PATH="/opt/venv/bin:$PATH"
-CMD ["python3", "-m", "modules"]
+
+CMD ["python", "-m", "modules"]
