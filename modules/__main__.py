@@ -29,72 +29,67 @@ bot = Client(
 
 async def main():
     try:
-        # Start Flask in a background thread
         threading.Thread(target=run_flask, daemon=True).start()
         print("Flask Health Check started!")
-        
-        # Give the port a moment to bind
+
         await asyncio.sleep(1)
 
-        # Initialize the aiohttp session safely within the loop
-        await config.get_session() 
+        await config.get_session()
         print("Aiohttp session initialized!")
 
-        # Start the bot client with Time Sync retry logic
         try:
             await bot.start()
         except Exception as e:
             if "[16]" in str(e) or "msg_id too low" in str(e).lower():
                 print("Time sync error detected. Waiting 5 seconds to retry...")
                 await asyncio.sleep(5)
-                await bot.start() # Second attempt
+                await bot.start()
             else:
-                raise e
+                raise
 
         print("Bot is online!")
 
-        # Start your additional module logic (PyTgCalls, etc.)
-        await run_client() 
+        await run_client()
         print("ClientBot logic running!")
 
-        # Keep the script alive
         await idle()
 
-    except Exception as e:
-        print(f"CRITICAL ERROR during startup: {e}")
+    except Exception:
+        import traceback
+        print("CRITICAL ERROR during startup:")
+        traceback.print_exc()
+        raise
 
     finally:
-        # Graceful cleanup
-        if hasattr(config, 'aiohttpsession') and config.aiohttpsession:
+        if hasattr(config, "aiohttpsession") and config.aiohttpsession:
             await config.aiohttpsession.close()
             print("Aiohttp session closed.")
-        
+
         if bot.is_connected:
             await bot.stop()
             print("Bot disconnected gracefully.")
 
+
 if __name__ == "__main__":
-    # Manual loop management to satisfy PyTgCalls cleanup requirements
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    
+
     try:
         loop.run_until_complete(main())
     except KeyboardInterrupt:
         print("Bot stopped by user.")
     finally:
-        # Handle lingering tasks (like pytgcalls cleanup) before closing loop
         try:
             pending = asyncio.all_tasks(loop)
             if pending:
-                loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+                loop.run_until_complete(
+                    asyncio.gather(*pending, return_exceptions=True)
+                )
         except Exception:
             pass
-        
-        # We wrap loop.close() in a try-block because pytgcalls often 
-        # tries to use the loop during an 'atexit' call.
+
         try:
             loop.close()
             print("Loop closed.")
-        except:
+        except Exception:
             pass
