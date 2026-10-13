@@ -11,17 +11,22 @@ pytgcalls = PyTgCalls(client)
 @pytgcalls.on_update(filters.stream_end())
 async def on_stream_end(_: PyTgCalls, update: StreamEnded):
     chat_id = update.chat_id
-    queues.task_done(chat_id)
 
-    if queues.is_empty(chat_id):
-        await pytgcalls.leave_call(chat_id)
-    else:
-        next_song = queues.get(chat_id)
-        if next_song:
+    next_song = queues.get(chat_id)
+
+    if next_song and next_song.get("file"):
+        try:
             await pytgcalls.play(
                 chat_id,
                 MediaStream(next_song["file"]),
             )
+            queues.task_done(chat_id)
+        except Exception as e:
+            print(f"Autoplay error in chat {chat_id}: {e}")
+            await pytgcalls.leave_call(chat_id)
+    else:
+        await pytgcalls.leave_call(chat_id)
+
       
 async def run():
     await pytgcalls.start()
