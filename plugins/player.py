@@ -320,12 +320,14 @@ async def skip(_, message: Message):
 async def stop(_, message: Message):
     chat_id = message.chat.id
 
-    try:
-        clientbot.queues.clear(chat_id)
-    except (QueueEmpty, KeyError):
-        pass
+    queues.clear(chat_id)
 
-    await clientbot.pytgcalls.leave_call(chat_id)
+    try:
+        await clientbot.pytgcalls.leave_call(chat_id)
+    except Exception as e:
+        print(f"Stop error in chat {chat_id}: {e}")
+
+    await message.reply_text("⏹️ Playback stopped and queue cleared.")
 
     
 @Client.on_message(commandpro(["/restart", "restart"]))
