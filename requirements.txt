@@ -5,7 +5,7 @@ flask==3.0.3
 dnspython
 ffmpeg-python
 future
-yt-dlp
+yt-dlp[default]
 motor
 pillow
 psutil
