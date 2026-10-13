@@ -266,52 +266,67 @@ async def play(_, message: Message):
 @errors
 @authorized_users_only
 async def pause(_, message: Message):
-    await clientbot.pytgcalls.pause_stream(message.chat.id)
-    
+    await clientbot.pytgcalls.pause(message.chat.id)
 
 
 @Client.on_message(commandpro(["/resume", "resume"]))
 @errors
 @authorized_users_only
 async def resume(_, message: Message):
-    await clientbot.pytgcalls.resume_stream(message.chat.id)
-    
+    await clientbot.pytgcalls.resume(message.chat.id)
+
+
 @Client.on_message(commandpro(["/skip", "/next", "skip", "next"]))
 @errors
 @authorized_users_only
 async def skip(_, message: Message):
-    global que
-    ACTV_CALLS = []
     chat_id = message.chat.id
-    for x in clientbot.pytgcalls.active_calls:
-        ACTV_CALLS.append(int(x.chat_id))
-    if int(chat_id) not in ACTV_CALLS:
-        await message.reply_text("**💥 ᴘʟᴀʏʟɪsᴛ ɪs 🔇\n ᴇᴍᴘᴛʏ🌷 ...**")
-    else:
-        queues.task_done(chat_id)
-        
-        if queues.is_empty(chat_id):
-            await clientbot.pytgcalls.leave_group_call(chat_id)
-        else:
-            await clientbot.pytgcalls.change_stream(
-                chat_id, 
-                InputStream(
-                    InputAudioStream(
-                        clientbot.queues.get(chat_id)["file"],
-                    ),
-                ),
-            )
 
-@Client.on_message(commandpro(["/end", "end", "/stop", "stop", "x"]))
+    # Check whether a voice call is active
+    active_calls = [
+        int(call.chat_id)
+        for call in clientbot.pytgcalls.active_calls
+    ]
+
+    if chat_id not in active_calls:
+        await message.reply_text(
+            "**💥 ᴘʟᴀʏʟɪsᴛ ɪs 🔇\n ᴇᴍᴘᴛʏ🌷 ...**"
+        )
+        return
+
+    # Mark the current track as finished
+    queues.task_done(chat_id)
+
+    # Play the next track, or leave if the queue is empty
+    if queues.is_empty(chat_id):
+        await clientbot.pytgcalls.leave_call(chat_id)
+    else:
+        next_song = queues.get(chat_id)
+
+        if next_song and next_song.get("file"):
+            await clientbot.pytgcalls.play(
+                chat_id,
+                MediaStream(next_song["file"]),
+            )
+        else:
+            await clientbot.pytgcalls.leave_call(chat_id)
+
+
+@Client.on_message(
+    commandpro(["/end", "end", "/stop", "stop", "x"])
+)
 @errors
 @authorized_users_only
 async def stop(_, message: Message):
+    chat_id = message.chat.id
+
     try:
-        clientbot.queues.clear(message.chat.id)
-    except QueueEmpty:
+        clientbot.queues.clear(chat_id)
+    except (QueueEmpty, KeyError):
         pass
 
-    await clientbot.pytgcalls.leave_group_call(message.chat.id)
+    await clientbot.pytgcalls.leave_call(chat_id)
+
     
 @Client.on_message(commandpro(["/restart", "restart"]))
 @errors
