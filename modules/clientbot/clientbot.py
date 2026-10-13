@@ -1,7 +1,6 @@
 from pyrogram import Client
-from pytgcalls import PyTgCalls
-from pytgcalls.types import Update
-from pytgcalls.types import MediaStream
+from pytgcalls import PyTgCalls, filters
+from pytgcalls.types import StreamEnded, MediaStream
 from modules import config
 from . import queues
 
