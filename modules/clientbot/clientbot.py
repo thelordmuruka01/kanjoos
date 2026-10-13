@@ -4,7 +4,13 @@ from pytgcalls.types import StreamEnded, MediaStream
 from modules import config
 from . import queues
 
-client = Client(config.STRING_SESSION, config.API_ID, config.API_HASH)
+
+client = Client(
+    "kanjoos_assistant",
+    api_id=config.API_ID,
+    api_hash=config.API_HASH,
+    session_string=config.STRING_SESSION,
+)
 pytgcalls = PyTgCalls(client)
 
 
