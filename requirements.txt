@@ -10,7 +10,7 @@ motor
 pillow
 psutil
 pyrogrammod>=2.1.2
-py-tgcalls[pyrogram]
+py-tgcalls[pyrogram]==3.0.0
 python-dotenv
 requests
 tgcrypto
