@@ -1,10 +1,3 @@
-import pyrogram.errors as pyrogram_errors
-
-if not hasattr(pyrogram_errors, "GroupcallForbidden"):
-    if hasattr(pyrogram_errors, "GroupCallForbidden"):
-        pyrogram_errors.GroupcallForbidden = (
-            pyrogram_errors.GroupCallForbidden
-        )
 from pyrogram import Client
 from pytgcalls import PyTgCalls
 from pytgcalls.types import Update
