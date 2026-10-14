@@ -15,15 +15,15 @@ ydl_opts = {
     "outtmpl": path.join(DOWNLOAD_DIR, "%(id)s.%(ext)s"),
     "noplaylist": True,
     "retries": 2,
-    "fragment_retries": 2,
+    "fragment_retries": 2,    
     "extractor_args": {
-        "youtube": {
-            "player_client": ["mweb"],
-        },
-        "youtubepot-bgutilscript": {
-            "server_home": "/opt/bgutil-ytdlp-pot-provider/server",
-        },
+    "youtube": {
+        "player_client": ["mweb", "tv", "web_safari"],
     },
+    "youtubepot-bgutilscript": {
+        "server_home": "/opt/bgutil-ytdlp-pot-provider/server",
+    },
+},
     "quiet": False,
     "no_warnings": False,
 }
