@@ -17,10 +17,10 @@ ydl_opts = {
     "retries": 1,
     "fragment_retries": 1,
     "extractor_args": {
-        "youtube": {
-            "player_client": ["tv", "web_safari"],
-        }
-    },
+    "youtube": {
+        "player_client": ["android_vr", "tv"],
+    }
+},
     "quiet": False,
     "no_warnings": False,
 }
