@@ -14,13 +14,16 @@ ydl_opts = {
     "format": "bestaudio/best",
     "outtmpl": path.join(DOWNLOAD_DIR, "%(id)s.%(ext)s"),
     "noplaylist": True,
-    "retries": 1,
-    "fragment_retries": 1,
+    "retries": 2,
+    "fragment_retries": 2,
     "extractor_args": {
-    "youtube": {
-        "player_client": ["android_vr", "tv"],
-    }
-},
+        "youtube": {
+            "player_client": ["mweb"],
+        },
+        "youtubepot-bgutilscript": {
+            "server_home": "/opt/bgutil-ytdlp-pot-provider/server",
+        },
+    },
     "quiet": False,
     "no_warnings": False,
 }
