@@ -25,6 +25,7 @@ ydl_opts = {
         "base_url": "http://127.0.0.1:4416",
     },
 },
+},
 ydl = YoutubeDL(ydl_opts)
 print("=== YT-DLP PLUGIN DIAGNOSTIC ===")
 
