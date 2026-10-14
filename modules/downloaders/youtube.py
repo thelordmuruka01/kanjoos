@@ -17,6 +17,9 @@ ydl_opts = {
     "retries": 1,
     "fragment_retries": 1,
     "verbose": True,
+    "js_runtimes": {
+    "node": {},
+},
     "extractor_args": {
         "youtube": {
             "player_client": ["mweb"],
