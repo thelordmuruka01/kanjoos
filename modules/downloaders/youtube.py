@@ -18,14 +18,17 @@ ydl_opts = {
     "fragment_retries": 1,
     "verbose": True,
     "extractor_args": {
-    "youtube": {
-        "player_client": ["mweb"],
+        "youtube": {
+            "player_client": ["mweb"],
+        },
+        "youtubepot-bgutilhttp": {
+            "base_url": "http://127.0.0.1:4416",
+        },
     },
-    "youtubepot-bgutilhttp": {
-        "base_url": "http://127.0.0.1:4416",
-    },
-},
-},
+    "quiet": False,
+    "no_warnings": False,
+}
+
 ydl = YoutubeDL(ydl_opts)
 print("=== YT-DLP PLUGIN DIAGNOSTIC ===")
 
