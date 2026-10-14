@@ -29,7 +29,17 @@ ydl_opts = {
     "no_warnings": False,
 }
 ydl = YoutubeDL(ydl_opts)
+print("=== YT-DLP PLUGIN DIAGNOSTIC ===")
 
+try:
+    ydl.print_debug_header()
+    ydl.write_debug(
+        "PO Token provider diagnostic enabled"
+    )
+except Exception as exc:
+    print(f"Diagnostic error: {exc}")
+
+print("=== END DIAGNOSTIC ===")
 
 def download(url: str) -> str:
     try:
